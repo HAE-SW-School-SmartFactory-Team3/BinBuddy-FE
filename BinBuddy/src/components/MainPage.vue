@@ -1,32 +1,27 @@
 <template>
   <div class="container">
-    <!-- 헤더 -->
     <header class="header">
       <div class="profile-icon">
         <img :src="profileIcon" alt="Profile Icon" />
       </div>
     </header>
 
-    <!-- 콘텐츠 -->
     <main class="content">
       <div class="logo">
         <img :src="logo" alt="BinBuddy Logo" />
         <span>BinBuddy</span>
       </div>
-      <!-- 검색 바 -->
       <div class="search-bar">
         <img :src="searchIcon" class="icon" alt="Search Icon" />
         <input type="text" class="search-input" placeholder="Let me see your trash..." />
-        <img :src="imageIcon" class="icon" alt="Image Icon" />
+        <img :src="ImageIcon" class="icon image" alt="Image Icon" />
         <img :src="cameraIcon" class="icon" alt="Camera Icon" />
       </div>
 
-      <!-- 문구 -->
       <div class="quote">"The Earth does not belong to us."</div>
       <div class="quote">"We belong to the Earth."</div>
     </main>
 
-    <!-- 푸터 -->
     <footer class="footer">
       <div class="line"></div>
       <p>HAE Mobility SW School Team 3</p>
@@ -64,7 +59,7 @@ import cameraIcon from "../assets/img/cam-icon.svg";
   align-items: center;
   width: 90%;
   margin-top: 20px;
-  margin-bottom: 150px;
+  margin-bottom: 50px;
 }
 
 .logo {
@@ -130,6 +125,9 @@ import cameraIcon from "../assets/img/cam-icon.svg";
   width: 20px;
   height: 20px;
   cursor: pointer;
+}
+.image {
+  margin-right: 20px;
 }
 
 /* 문구 */
