@@ -9,7 +9,10 @@
       </div>
     </div>
     <div class="content">
-      <h1>let me see your trash...</h1>
+      <div class="search-bar">
+        <img :src="search" @click="searchItem" class="search-item" />
+        <input class="search-input" type="text" placeholder="let me see your trash..." />
+      </div>
 
       <p class="notice">“The Earth does not belong to us. We belong to the Earth.”</p>
     </div>
@@ -19,6 +22,9 @@
 
 <script setup>
 import logo from "../assets/img/logo.svg";
+import search from "../assets/img/search-icon.svg";
+import image from "../assets/img/image-icon.svg";
+import cam from "../assets/img/cam-icon.svg";
 </script>
 
 <style scoped>
@@ -56,9 +62,37 @@ import logo from "../assets/img/logo.svg";
   align-items: space-between;
 }
 .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  width: 800px;
+  height: 70px;
+  border: solid 2px white;
+  border-radius: 35px;
+}
+.search-item {
+  cursor: pointer;
+  margin-right: 20px;
+}
+.search-input {
+  width: 500px;
+  height: 40px;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 24px;
+}
+input::placeholder {
+  color: white; /* 원하는 색상 */
 }
 .notice {
-  font-size: 30px;
+  font-size: 32px;
 }
 .footer {
   height: 100px;
