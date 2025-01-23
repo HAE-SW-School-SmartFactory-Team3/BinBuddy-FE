@@ -1,104 +1,153 @@
 <template>
   <div class="container">
-    <div class="header">
-      <div class="header-left"><img :src="logo" /> BinBuddy</div>
-      <div class="header-right">
-        <div>My Page</div>
-        <div class="space"></div>
-        <div>Login</div>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="profile-icon">
+        <img :src="profileIcon" alt="Profile Icon" />
       </div>
-    </div>
-    <div class="content">
+    </header>
+
+    <!-- 콘텐츠 -->
+    <main class="content">
+      <div class="logo">
+        <img :src="logo" alt="BinBuddy Logo" />
+        <span>BinBuddy</span>
+      </div>
+      <!-- 검색 바 -->
       <div class="search-bar">
-        <img :src="search" @click="searchItem" class="search-item" />
-        <input class="search-input" type="text" placeholder="let me see your trash..." />
+        <img :src="searchIcon" class="icon" alt="Search Icon" />
+        <input type="text" class="search-input" placeholder="Let me see your trash..." />
+        <img :src="imageIcon" class="icon" alt="Image Icon" />
+        <img :src="cameraIcon" class="icon" alt="Camera Icon" />
       </div>
 
-      <p class="notice">“The Earth does not belong to us. We belong to the Earth.”</p>
-    </div>
-    <div class="footer"></div>
+      <!-- 문구 -->
+      <div class="quote">"The Earth does not belong to us."</div>
+      <div class="quote">"We belong to the Earth."</div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="line"></div>
+      <p>HAE Mobility SW School Team 3</p>
+    </footer>
   </div>
 </template>
 
 <script setup>
 import logo from "../assets/img/logo.svg";
-import search from "../assets/img/search-icon.svg";
-import image from "../assets/img/image-icon.svg";
-import cam from "../assets/img/cam-icon.svg";
+import searchIcon from "../assets/img/search-icon.svg";
+import imageIcon from "../assets/img/image-icon.svg";
+import cameraIcon from "../assets/img/cam-icon.svg";
 </script>
 
 <style scoped>
+/* 전체 컨테이너 */
 .container {
   background-image: url("../assets/img/forest-bg.svg");
-  width: 100vw;
-  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  color: white;
 }
+
+/* 헤더 */
 .header {
-  height: 100px;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  width: 90%;
+  margin-top: 20px;
+  margin-bottom: 150px;
+}
+
+.logo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  margin-bottom: 30px;
 }
-.header-left {
-  font-size: 40px;
-  margin-left: 80px;
+
+.logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.logo span {
+  font-size: 24px;
   font-weight: bold;
 }
-.header-right {
-  font-size: 20px;
-  margin-right: 100px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
+
+.profile-icon img {
+  height: 30px;
+  width: 30px;
 }
-.header-right-inner {
-  display: flex;
-  align-items: space-between;
-}
+
+/* 콘텐츠 */
 .content {
+  text-align: center;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+  width: 100vw;
 }
+
 .search-bar {
   display: flex;
   align-items: center;
-  padding-left: 30px;
-  width: 800px;
-  height: 70px;
+  justify-content: space-between;
   border: solid 2px white;
-  border-radius: 35px;
+  width: 80%;
+  height: 60px;
+  border-radius: 30px;
+  padding: 0 15px;
+  margin-bottom: 100px;
 }
-.search-item {
-  cursor: pointer;
-  margin-right: 20px;
-}
+
 .search-input {
-  width: 500px;
-  height: 40px;
+  flex: 1;
   background: none;
   border: none;
   outline: none;
   color: white;
-  font-size: 24px;
-}
-input::placeholder {
-  color: white; /* 원하는 색상 */
-}
-.notice {
-  font-size: 32px;
-}
-.footer {
-  height: 100px;
+  font-size: 1.2rem;
+  padding: 0 10px;
 }
 
-.space {
-  width: 40px;
+.search-input::placeholder {
+  color: rgb(255, 255, 255);
+  font-style: italic;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* 문구 */
+.quote {
+  font-size: 1.6rem;
+  line-height: 1.5;
+}
+
+/* 푸터 */
+.footer {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.line {
+  width: 100%;
+  height: 2px;
+  background: white;
 }
 </style>
