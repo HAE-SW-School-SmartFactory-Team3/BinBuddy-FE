@@ -6,16 +6,16 @@
         <div class="title">BinBuddy</div>
       </div>
       <div class="search-bar">
-        <img :src="searchIcon" class="icon" alt="Search Icon" />
         <input type="text" class="search-input" placeholder="Let me see your trash..." />
+        <img :src="searchIcon" class="icon" alt="Search Icon" @click="textSearch" />
       </div>
       <div class="buttons">
+        <!-- 이미지 업로드 -->
         <input type="file" accept="image/*" id="uploadInput" @change="handleFileChange" style="display: none" />
         <label for="uploadInput" class="custom-button">
           <img :src="uploadIcon" alt="Upload Icon" />
         </label>
-
-        <!-- 숨겨진 파일 입력 (카메라) -->
+        <!-- 후면 카메라 -->
         <input type="file" capture="environment" id="cameraInput" @change="handleFileChange" style="display: none" />
         <label for="cameraInput" class="custom-button">
           <img :src="cameraIcon" alt="Camera Icon" />
@@ -23,10 +23,12 @@
       </div>
       <div class="quote">"The Earth does not belong to us."</div>
       <div class="quote">"We belong to the Earth."</div>
-      <!-- <div>debug : {{ debug }}</div> -->
-      <div>
-        <img v-if="imageSrc" :src="imageSrc" alt="Uploaded Image" style="max-width: 30%; margin-top: 10px" />
-      </div>
+      <img
+        v-if="selectedImage"
+        :src="selectedImage"
+        alt="Captured Image Preview"
+        style="max-width: 40%; margin-top: 20px" />
+      <div v-if="selectedImage" class="imageSearch">Analysis</div>
     </main>
 
     <footer class="footer">
@@ -40,7 +42,7 @@
 import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
 import uploadIcon from "../assets/img/image-icon.svg";
-import cameraIcon from "../assets/img/cam-icon.svg";
+import cameraIcon from "../assets/img/camera-icon.svg";
 import userIcon from "../assets/img/user-icon.svg";
 import { ref } from "vue";
 const debug = ref("Awaiting upload...");
@@ -55,6 +57,17 @@ const handleFileChange = (event) => {
   } else {
     debug.value = "No file selected.";
   }
+};
+
+const textSearch = () => {
+  // TODO: API 호출, 검색 결과 UI ��신
+  console.log("Text Search called");
+  console.log();
+};
+
+const imageSearch = () => {
+  // TODO: API 호출, 이미지 검색 결과 UI ��신
+  console.log("Image Search called");
 };
 </script>
 
@@ -123,7 +136,11 @@ const handleFileChange = (event) => {
 }
 .buttons {
   margin-top: 20px;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 10%;
 }
 .search-input {
   flex: 1;
@@ -137,7 +154,7 @@ const handleFileChange = (event) => {
 
 .search-input::placeholder {
   color: rgb(255, 255, 255);
-  font-style: italic;
+  /* font-style: italic; */
 }
 
 .icon {
@@ -155,6 +172,15 @@ const handleFileChange = (event) => {
   line-height: 1.5;
 }
 
+.imageSearch {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px;
+  width: 20%;
+  border-radius: 100px;
+  border: solid 1px white;
+}
 /* 푸터 */
 .footer {
   text-align: center;
@@ -163,6 +189,7 @@ const handleFileChange = (event) => {
   width: 100%;
 }
 .line {
+  margin-top: 20px;
   width: 100%;
   height: 2px;
   background: white;
