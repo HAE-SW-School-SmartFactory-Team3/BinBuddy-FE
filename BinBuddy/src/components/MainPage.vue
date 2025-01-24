@@ -2,19 +2,19 @@
   <div class="container">
     <header class="header">
       <div class="profile-icon">
-        <img :src="profileIcon" alt="Profile Icon" />
+        <img :src="userIcon" alt="Profile Icon" />
       </div>
     </header>
 
     <main class="content">
       <div class="logo">
         <img :src="logo" alt="BinBuddy Logo" />
-        <span>BinBuddy</span>
+        <div class="title">BinBuddy</div>
       </div>
       <div class="search-bar">
         <img :src="searchIcon" class="icon" alt="Search Icon" />
         <input type="text" class="search-input" placeholder="Let me see your trash..." />
-        <img :src="ImageIcon" class="icon image" alt="Image Icon" />
+        <img :src="imageIcon" class="icon image" alt="Image Icon" />
         <img :src="cameraIcon" class="icon" alt="Camera Icon" />
       </div>
 
@@ -24,7 +24,7 @@
 
     <footer class="footer">
       <div class="line"></div>
-      <p>HAE Mobility SW School Team 3</p>
+      <p class="team">HAE Mobility SW School Team 3</p>
     </footer>
   </div>
 </template>
@@ -34,6 +34,7 @@ import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
 import imageIcon from "../assets/img/image-icon.svg";
 import cameraIcon from "../assets/img/cam-icon.svg";
+import userIcon from "../assets/img/user-icon.svg";
 </script>
 
 <style scoped>
@@ -62,6 +63,10 @@ import cameraIcon from "../assets/img/cam-icon.svg";
   margin-bottom: 50px;
 }
 
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+}
 .logo {
   display: flex;
   align-items: center;
@@ -132,7 +137,7 @@ import cameraIcon from "../assets/img/cam-icon.svg";
 
 /* 문구 */
 .quote {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   line-height: 1.5;
 }
 
@@ -147,5 +152,8 @@ import cameraIcon from "../assets/img/cam-icon.svg";
   width: 100%;
   height: 2px;
   background: white;
+}
+.team {
+  font-size: 18px;
 }
 </style>
