@@ -23,12 +23,21 @@
       </div>
       <div class="quote">"The Earth does not belong to us."</div>
       <div class="quote">"We belong to the Earth."</div>
+
+      <!-- 이미지 미리보기 -->
       <img
         v-if="selectedImage"
         :src="selectedImage"
         alt="Captured Image Preview"
         style="max-width: 40%; margin-top: 20px" />
-      <div v-if="selectedImage" class="imageSearch" @click="goToAnalysis">Analysis</div>
+
+      <!-- Analysis 버튼 -->
+      <div v-if="selectedImage" class="imageSearch" @click="imageSearch">Analysis</div>
+
+      <!-- 로딩 화면 -->
+      <div v-if="loading" class="loading-overlay">
+        <p>Analyzing your trash...</p>
+      </div>
     </main>
 
     <footer class="footer">
@@ -39,46 +48,91 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
 import uploadIcon from "../assets/img/image-icon.svg";
 import cameraIcon from "../assets/img/camera-icon.svg";
-import userIcon from "../assets/img/user-icon.svg";
 
-import { ref } from "vue";
-import { useRouter } from "vue-router"; // 라우터 사용
-
-const router = useRouter();
+// 상태 관리
+const selectedFile = ref(null); // 업로드된 파일
+const selectedImage = ref(null); // 미리보기 이미지 URL
+const loading = ref(false); // 로딩 상태
 const debug = ref("Awaiting upload...");
-const selectedImage = ref(null); // 선택된 이미지 미리보기 URL
+const detectedItems = ref([]); // YOLO 감지 결과
+const geminiItems = ref([]); // Gemini 분석 결과
 
-const goToAnalysis = () => {
-  router.push("/analysis");
-};
-// 파일/카메라 공통 핸들러
+// 파일 선택 핸들러
 const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
-    debug.value = `Selected file: ${file.name}`;
+    selectedFile.value = file; // 파일 저장
     selectedImage.value = URL.createObjectURL(file); // 미리보기 URL 생성
+    debug.value = `Selected file: ${file.name}`;
   } else {
     debug.value = "No file selected.";
   }
 };
 
-const textSearch = () => {
-  // TODO: API 호출, 검색 결과 UI ��신
-  console.log("Text Search called");
-  console.log();
-};
+// 이미지 분석 요청
+const imageSearch = async () => {
+  if (!selectedFile.value) {
+    alert("No image selected!");
+    return;
+  }
 
-const imageSearch = () => {
-  // TODO: API 호출, 이미지 검색 결과 UI ��신
-  console.log("Image Search called");
+  const formData = new FormData();
+  formData.append("image", selectedFile.value);
+
+  loading.value = true; // 로딩 화면 표시
+  try {
+    const response = await fetch("http://175.197.246.10:35000/api/v1/image-analysis", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const result = await response.json(); // 서버 응답 받기
+
+    // YOLO 감지 결과 저장
+    detectedItems.value = result.detected_items || [];
+
+    // Gemini 분석 결과 저장
+    geminiItems.value = result.gemini_items ? result.gemini_items.split("\n").filter((line) => line.trim()) : [];
+
+    debug.value = JSON.stringify(result, null, 2); // 디버깅용 결과 표시
+    console.log(result);
+    console.log(detectedItems.value);
+    console.log(detectedItems);
+    console.log(geminiItems.value);
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Failed to analyze the image. Please try again.");
+  } finally {
+    loading.value = false; // 로딩 화면 숨기기
+  }
 };
 </script>
 
 <style scoped>
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  z-index: 1000;
+}
+
 /* 전체 컨테이너 */
 .container {
   background-image: url("../assets/img/forest-bg.svg");
