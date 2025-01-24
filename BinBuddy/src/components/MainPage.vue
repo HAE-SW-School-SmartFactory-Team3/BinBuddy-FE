@@ -28,7 +28,7 @@
         :src="selectedImage"
         alt="Captured Image Preview"
         style="max-width: 40%; margin-top: 20px" />
-      <div v-if="selectedImage" class="imageSearch">Analysis</div>
+      <div v-if="selectedImage" class="imageSearch" @click="goToAnalysis">Analysis</div>
     </main>
 
     <footer class="footer">
@@ -44,10 +44,17 @@ import searchIcon from "../assets/img/search-icon.svg";
 import uploadIcon from "../assets/img/image-icon.svg";
 import cameraIcon from "../assets/img/camera-icon.svg";
 import userIcon from "../assets/img/user-icon.svg";
+
 import { ref } from "vue";
+import { useRouter } from "vue-router"; // 라우터 사용
+
+const router = useRouter();
 const debug = ref("Awaiting upload...");
 const selectedImage = ref(null); // 선택된 이미지 미리보기 URL
 
+const goToAnalysis = () => {
+  router.push("/analysis");
+};
 // 파일/카메라 공통 핸들러
 const handleFileChange = (event) => {
   const file = event.target.files[0];
