@@ -15,5 +15,6 @@ import MainPage from "./components/MainPage.vue";
   align-items: center;
   height: 100vh;
   width: 100%;
+  background: black;
 }
 </style>

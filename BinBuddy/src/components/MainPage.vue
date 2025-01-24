@@ -10,11 +10,23 @@
         <input type="text" class="search-input" placeholder="Let me see your trash..." />
       </div>
       <div class="buttons">
-        <img :src="imageIcon" class="icon image" alt="Image Icon" />
-        <img :src="cameraIcon" class="icon" alt="Camera Icon" />
+        <input type="file" accept="image/*" id="uploadInput" @change="handleFileChange" style="display: none" />
+        <label for="uploadInput" class="custom-button">
+          <img :src="uploadIcon" alt="Upload Icon" />
+        </label>
+
+        <!-- 숨겨진 파일 입력 (카메라) -->
+        <input type="file" capture="environment" id="cameraInput" @change="handleFileChange" style="display: none" />
+        <label for="cameraInput" class="custom-button">
+          <img :src="cameraIcon" alt="Camera Icon" />
+        </label>
       </div>
       <div class="quote">"The Earth does not belong to us."</div>
       <div class="quote">"We belong to the Earth."</div>
+      <!-- <div>debug : {{ debug }}</div> -->
+      <div>
+        <img v-if="imageSrc" :src="imageSrc" alt="Uploaded Image" style="max-width: 30%; margin-top: 10px" />
+      </div>
     </main>
 
     <footer class="footer">
@@ -27,9 +39,23 @@
 <script setup>
 import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
-import imageIcon from "../assets/img/image-icon.svg";
+import uploadIcon from "../assets/img/image-icon.svg";
 import cameraIcon from "../assets/img/cam-icon.svg";
 import userIcon from "../assets/img/user-icon.svg";
+import { ref } from "vue";
+const debug = ref("Awaiting upload...");
+const selectedImage = ref(null); // 선택된 이미지 미리보기 URL
+
+// 파일/카메라 공통 핸들러
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    debug.value = `Selected file: ${file.name}`;
+    selectedImage.value = URL.createObjectURL(file); // 미리보기 URL 생성
+  } else {
+    debug.value = "No file selected.";
+  }
+};
 </script>
 
 <style scoped>
@@ -56,6 +82,7 @@ import userIcon from "../assets/img/user-icon.svg";
   display: flex;
   align-items: center;
   margin-bottom: 30px;
+  margin-top: 80px;
 }
 
 .logo img {
