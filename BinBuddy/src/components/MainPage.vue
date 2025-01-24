@@ -50,18 +50,23 @@
 <script setup>
 import { ref } from "vue";
 import { useDetectedItemsStore } from "../stores/detectedItems";
-
+import { useRouter } from "vue-router";
 import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
 import uploadIcon from "../assets/img/image-icon.svg";
 import cameraIcon from "../assets/img/camera-icon.svg";
 
 // 상태 관리
+const router = useRouter();
 const selectedFile = ref(null); // 업로드된 파일
 const selectedImage = ref(null); // 미리보기 이미지 URL
 const loading = ref(false); // 로딩 상태
 const debug = ref("Awaiting upload...");
 const detectedItems = ref([]); // 감지된 항목 저장
+
+const navigateToAnalysis = () => {
+  router.push("/analysis");
+};
 
 // 파일 선택 핸들러
 const handleFileChange = (event) => {
@@ -99,8 +104,9 @@ const imageSearch = async () => {
     }
 
     const result = await response.json(); // 서버 응답 받기
-
+    console.log(formData);
     const items = result.analysis.items.map((item) => ({
+      original: URL.createObjectURL(selectedFile.value),
       bbox: item.bbox,
       confidence: item.confidence,
       image: item.image,
@@ -115,6 +121,7 @@ const imageSearch = async () => {
     alert("Failed to analyze the image. Please try again.");
   } finally {
     loading.value = false; // 로딩 화면 숨기기
+    navigateToAnalysis();
   }
 };
 </script>
