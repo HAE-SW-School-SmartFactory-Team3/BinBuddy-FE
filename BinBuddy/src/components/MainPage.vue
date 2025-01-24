@@ -49,6 +49,8 @@
 
 <script setup>
 import { ref } from "vue";
+import { useDetectedItemsStore } from "../stores/detectedItems";
+
 import logo from "../assets/img/logo.svg";
 import searchIcon from "../assets/img/search-icon.svg";
 import uploadIcon from "../assets/img/image-icon.svg";
@@ -59,8 +61,7 @@ const selectedFile = ref(null); // 업로드된 파일
 const selectedImage = ref(null); // 미리보기 이미지 URL
 const loading = ref(false); // 로딩 상태
 const debug = ref("Awaiting upload...");
-const detectedItems = ref([]); // YOLO 감지 결과
-const geminiItems = ref([]); // Gemini 분석 결과
+const detectedItems = ref([]); // 감지된 항목 저장
 
 // 파일 선택 핸들러
 const handleFileChange = (event) => {
@@ -76,6 +77,8 @@ const handleFileChange = (event) => {
 
 // 이미지 분석 요청
 const imageSearch = async () => {
+  const detectedItemsStore = useDetectedItemsStore();
+
   if (!selectedFile.value) {
     alert("No image selected!");
     return;
@@ -97,17 +100,16 @@ const imageSearch = async () => {
 
     const result = await response.json(); // 서버 응답 받기
 
-    // YOLO 감지 결과 저장
-    detectedItems.value = result.detected_items || [];
+    const items = result.analysis.items.map((item) => ({
+      bbox: item.bbox,
+      confidence: item.confidence,
+      image: item.image,
+      number: item.number,
+      type: item.type,
+    }));
 
-    // Gemini 분석 결과 저장
-    geminiItems.value = result.gemini_items ? result.gemini_items.split("\n").filter((line) => line.trim()) : [];
-
-    debug.value = JSON.stringify(result, null, 2); // 디버깅용 결과 표시
-    console.log(result);
-    console.log(detectedItems.value);
-    console.log(detectedItems);
-    console.log(geminiItems.value);
+    detectedItemsStore.setItems(items);
+    console.log("Detected Items:", items);
   } catch (error) {
     console.error("Error:", error);
     alert("Failed to analyze the image. Please try again.");
