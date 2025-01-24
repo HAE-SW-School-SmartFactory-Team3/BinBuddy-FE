@@ -1,11 +1,5 @@
 <template>
   <div class="container">
-    <header class="header">
-      <div class="profile-icon">
-        <img :src="userIcon" alt="Profile Icon" />
-      </div>
-    </header>
-
     <main class="content">
       <div class="logo">
         <img :src="logo" alt="BinBuddy Logo" />
@@ -14,10 +8,11 @@
       <div class="search-bar">
         <img :src="searchIcon" class="icon" alt="Search Icon" />
         <input type="text" class="search-input" placeholder="Let me see your trash..." />
+      </div>
+      <div class="buttons">
         <img :src="imageIcon" class="icon image" alt="Image Icon" />
         <img :src="cameraIcon" class="icon" alt="Camera Icon" />
       </div>
-
       <div class="quote">"The Earth does not belong to us."</div>
       <div class="quote">"We belong to the Earth."</div>
     </main>
@@ -51,16 +46,6 @@ import userIcon from "../assets/img/user-icon.svg";
   width: 100%;
   height: 100vh;
   color: white;
-}
-
-/* 헤더 */
-.header {
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  width: 90%;
-  margin-top: 20px;
-  margin-bottom: 50px;
 }
 
 .title {
@@ -108,9 +93,11 @@ import userIcon from "../assets/img/user-icon.svg";
   height: 60px;
   border-radius: 30px;
   padding: 0 15px;
-  margin-bottom: 100px;
 }
-
+.buttons {
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
 .search-input {
   flex: 1;
   background: none;
