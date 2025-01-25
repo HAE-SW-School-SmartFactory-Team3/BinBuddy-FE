@@ -36,7 +36,8 @@
 
       <!-- 로딩 화면 -->
       <div v-if="loading" class="loading-overlay">
-        <p>Analyzing your trash...</p>
+        <div class="spinner"></div>
+        <p class="loading-text">Analyzing your trash...</p>
       </div>
     </main>
 
@@ -142,13 +143,49 @@ const imageSearch = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
   z-index: 1000;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: white;
+  animation: fade 2s infinite;
+}
+
+/* 스피너 회전 애니메이션 */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 텍스트 페이드 애니메이션 */
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* 전체 컨테이너 */
