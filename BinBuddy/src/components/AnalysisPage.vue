@@ -17,20 +17,43 @@
             ref="imageRef" />
           <!-- BBOX 그리기 -->
           <div
-            v-for="(item, index) in items"
+            v-for="(item, index) in filteredItems"
             :key="index"
             class="bbox"
-            :style="getBoundingBoxStyle(item.bbox, imageDimensions.width, imageDimensions.height)">
+            :style="getBoundingBoxStyle(item.bbox, imageDimensions.width, imageDimensions.height, item.type)">
+            <span>{{ item.type }} ({{ (item.confidence * 100).toFixed(1) }}%)</span>
+          </div>
+          <div
+            v-for="(item, index) in filteredItems"
+            :key="index"
+            class="bbox"
+            :style="getBoundingBoxStyle2(item.bbox, imageDimensions.width, imageDimensions.height, item.type)">
             <span>{{ item.type }} ({{ (item.confidence * 100).toFixed(1) }}%)</span>
           </div>
         </div>
       </div>
+
+      <!-- 동적 카테고리 선택 -->
+      <div class="categories">
+        <button
+          v-for="category in uniqueCategories"
+          :key="category"
+          :class="{ active: selectedCategory === category }"
+          @click="selectCategory(category)">
+          {{ category }}
+        </button>
+      </div>
+
       <ul>
         <li v-for="(item, index) in items" :key="index">
           {{ item.type }} - Confidence: {{ (item.confidence * 100).toFixed(1) }}% - BBOX: {{ item.bbox }}
         </li>
       </ul>
     </main>
+    <footer class="footer">
+      <div class="line"></div>
+      <p class="team">HAE Mobility SW School Team 3</p>
+    </footer>
   </div>
 </template>
 
@@ -45,27 +68,93 @@ const items = detectedItemsStore.items;
 const IMAGE_WIDTH = 640; // 백엔드 기준 너비
 const IMAGE_HEIGHT = 480; // 백엔드 기준 높이
 
-// 이미지 크기 변환 후 BBOX 스타일 계산 함수s
-const getBoundingBoxStyle = (bbox, imageWidth, imageHeight) => {
+// 색상 목록
+const colorList = [
+  "rgba(0, 128, 128,0.6)", // 청록
+  "rgba(255, 0, 0,0.6)", // 빨강
+  "rgba(0, 0, 255,0.6)", // 파랑
+  "rgba(0, 255, 0,0.6)", // 초록
+  "rgba(255, 165, 0,0.6)", // 주황
+  "rgba(128, 0, 128,0.6)", // 보라
+];
+
+// 고유 카테고리 추출 및 색상 매핑
+const uniqueCategories = computed(() => {
+  const types = [...new Set(items.map((item) => item.type))];
+  return ["All", ...types]; // "All" 포함
+});
+
+const categoryColors = ref({});
+uniqueCategories.value.forEach((category, index) => {
+  if (category !== "All") {
+    categoryColors.value[category] = colorList[index % colorList.length];
+  }
+});
+
+// 카테고리 선택 상태
+const selectedCategory = ref("All");
+
+// 필터링된 항목
+const filteredItems = computed(() => {
+  if (selectedCategory.value === "All") return items;
+  return items.filter((item) => item.type === selectedCategory.value);
+});
+
+// 카테고리 선택 핸들러
+const selectCategory = (category) => {
+  selectedCategory.value = category;
+};
+
+// 박스 색상 반환
+const getBoxColor = (type) => {
+  return categoryColors.value[type] || "rgba(255, 255, 0, 0.5)"; // 기본값: 노란색
+};
+
+// BBOX 스타일 계산
+const getBoundingBoxStyle = (bbox, imageWidth, imageHeight, type) => {
   const scaleX = imageWidth / IMAGE_WIDTH; // 너비 비율
   const scaleY = imageHeight / IMAGE_HEIGHT; // 높이 비율
   const [x, y, width, height] = bbox;
+
   return {
     position: "absolute",
-    border: "2px solid red",
-    color: "white",
+    border: `2px solid ${getBoxColor(type)}`,
+    color: "black",
     left: `${((x * scaleX) / imageWidth) * 100}%`,
     top: `${((y * scaleY) / imageHeight) * 100}%`,
     width: `${(((width - x) * scaleX) / imageWidth) * 100}%`,
     height: `${(((height - y) * scaleY) / imageHeight) * 100}%`,
+    // backgroundColor: getBoxColor(type), // 배경색
+    // padding: "2px 4px", // 텍스트 주변 여백
+    // borderRadius: "4px", // 둥근 모서리 (선택 사항)
+    // display: "inline-block", // 텍스트 영역에만 적용
+  };
+};
+const getBoundingBoxStyle2 = (bbox, imageWidth, imageHeight, type) => {
+  const scaleX = imageWidth / IMAGE_WIDTH; // 너비 비율
+  const scaleY = imageHeight / IMAGE_HEIGHT; // 높이 비율
+  const [x, y, width, height] = bbox;
+
+  return {
+    position: "absolute",
+    border: `2px solid ${getBoxColor(type)}`,
+    color: "white",
+    fontWeight: "bold",
+    left: `${((x * scaleX) / imageWidth) * 100}%`,
+    top: `${((y * scaleY) / imageHeight) * 100}%`,
+    width: `${(((width - x) * scaleX) / imageWidth) * 100}%`,
+    // height: `${(20 / imageHeight) * 100}%`,
+    backgroundColor: getBoxColor(type), // 배경색
+    // padding: "2px 4px", // 텍스트 주변 여백
+    // borderRadius: "4px", // 둥근 모서리 (선택 사항)
+    // display: "inline-block", // 텍스트 영역에만 적용
   };
 };
 
-// 이미지 렌더링 후 크기 계산
+// 이미지 크기 계산
 const imageRef = ref(null);
 const imageDimensions = computed(() => {
   if (imageRef.value) {
-    console.log(imageRef.value.clientWidth, imageRef.value.clientHeight);
     return {
       width: imageRef.value.clientWidth,
       height: imageRef.value.clientHeight,
@@ -76,28 +165,37 @@ const imageDimensions = computed(() => {
 </script>
 
 <style scoped>
-.point {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: red; /* 기본 색상 */
-  z-index: 10; /* 이미지 위에 표시되도록 설정 */
+/* 카테고리 버튼 */
+.categories {
+  margin: 20px;
+  text-align: center;
+}
+.categories button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}
+.categories button.active {
+  background-color: black;
+  color: white;
 }
 
+/* 이미지 박스 */
 .imageWrapper {
   position: relative;
   display: inline-block;
   width: 100%;
   height: auto;
 }
-
 .bbox {
   position: absolute;
   border: 2px solid red;
   color: white;
-  background-color: rgba(255, 0, 0, 0.5);
-  font-size: 12px;
+  font-size: 1rem;
   z-index: 10;
   pointer-events: none; /* 클릭 방지 */
 }
