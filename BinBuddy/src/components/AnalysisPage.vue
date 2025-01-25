@@ -44,11 +44,18 @@
         </button>
       </div>
 
-      <ul>
+      <!-- <ul>
         <li v-for="(item, index) in items" :key="index">
           {{ item.type }} - Confidence: {{ (item.confidence * 100).toFixed(1) }}% - BBOX: {{ item.bbox }}
         </li>
-      </ul>
+      </ul> -->
+
+      <div class="captured-section">
+        <div v-for="(item, index) in filteredItems" :key="index" class="captured-item">
+          <img :src="item.croppedImage" alt="Captured Area" />
+          <p>{{ item.type }} - {{ (item.confidence * 100).toFixed(1) }}%</p>
+        </div>
+      </div>
     </main>
     <footer class="footer">
       <div class="line"></div>
@@ -96,7 +103,9 @@ const selectedCategory = ref("All");
 
 // 필터링된 항목
 const filteredItems = computed(() => {
-  if (selectedCategory.value === "All") return items;
+  if (selectedCategory.value === "All") {
+    return items;
+  }
   return items.filter((item) => item.type === selectedCategory.value);
 });
 
@@ -162,6 +171,34 @@ const imageDimensions = computed(() => {
   }
   return { width: 0, height: 0 };
 });
+
+const generateCroppedImages = () => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  items.forEach((item) => {
+    const img = new Image();
+    img.src = items[0]?.original;
+
+    img.onload = () => {
+      const scaleX = img.width / IMAGE_WIDTH;
+      const scaleY = img.height / IMAGE_HEIGHT;
+
+      const [x, y, width, height] = item.bbox.map((val, idx) => (idx % 2 === 0 ? val * scaleX : val * scaleY));
+
+      canvas.width = width - x;
+      canvas.height = height - y;
+      ctx.drawImage(img, x, y, width - x, height - y, 0, 0, canvas.width, canvas.height);
+
+      item.croppedImage = canvas.toDataURL(); // Base64 이미지 저장
+    };
+  });
+};
+
+// 이미지가 로드된 후 캡처 실행
+if (items.length > 0 && items[0]?.original) {
+  generateCroppedImages();
+}
 </script>
 
 <style scoped>
@@ -268,6 +305,27 @@ const imageDimensions = computed(() => {
 .imageSection img {
   width: 100%;
   height: auto;
+}
+
+/* 캡쳐 */
+.captured-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.captured-item {
+  margin: 10px;
+  text-align: center;
+}
+
+.captured-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 /* 푸터 */
