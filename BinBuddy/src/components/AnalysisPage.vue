@@ -294,7 +294,7 @@ if (items.length > 0 && items[0]?.original) {
   border: 1px solid white;
   padding: 10px;
   border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(144, 144, 144, 0.4);
   color: white;
   width: 80%;
   text-align: center;
@@ -320,6 +320,7 @@ if (items.length > 0 && items[0]?.original) {
 .captured-item {
   margin: 10px;
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .captured-item img {
