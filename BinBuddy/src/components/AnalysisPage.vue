@@ -35,13 +35,38 @@
 
       <!-- 동적 카테고리 선택 -->
       <div class="categories">
-        <button
-          v-for="category in uniqueCategories"
-          :key="category"
-          :class="{ active: selectedCategory === category }"
-          @click="selectCategory(category)">
-          {{ category }}
-        </button>
+        <!-- Gemini 버튼을 상단에 배치 -->
+        <div class="gemini-category">
+          <button :class="{ active: showGemini }" @click="toggleGemini">Gemini Explain</button>
+        </div>
+        <!-- 카테고리 버튼 -->
+        <div class="category-buttons">
+          <button
+            v-for="category in uniqueCategories"
+            :key="category"
+            :class="{ active: selectedCategory === category && !showGemini }"
+            @click="selectCategory(category)">
+            {{ category }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Gemini Section -->
+      <div v-if="showGemini" class="gemini-section">
+        <div v-for="(guideline, category) in guidelines" :key="category" class="guideline-item">
+          <h3 class="guideline-title">{{ category }}</h3>
+          <p v-for="(info, index) in guideline" :key="index" class="guideline-text">
+            {{ info }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Captured Section -->
+      <div v-else class="captured-section">
+        <div v-for="(item, index) in filteredItems" :key="index" class="captured-item">
+          <img :src="item.croppedImage" alt="Captured Area" />
+          <p>{{ item.type }} - {{ (item.confidence * 100).toFixed(1) }}%</p>
+        </div>
       </div>
 
       <!-- <ul>
@@ -49,13 +74,13 @@
           {{ item.type }} - Confidence: {{ (item.confidence * 100).toFixed(1) }}% - BBOX: {{ item.bbox }}
         </li>
       </ul> -->
-
+      <!-- 
       <div class="captured-section">
         <div v-for="(item, index) in filteredItems" :key="index" class="captured-item">
           <img :src="item.croppedImage" alt="Captured Area" />
           <p>{{ item.type }} - {{ (item.confidence * 100).toFixed(1) }}%</p>
         </div>
-      </div>
+      </div> -->
     </main>
     <footer class="footer">
       <div class="line"></div>
@@ -71,9 +96,33 @@ import { ref, computed } from "vue";
 
 const detectedItemsStore = useDetectedItemsStore();
 const items = detectedItemsStore.items;
+const guidelines = detectedItemsStore.guidelines;
 
 const IMAGE_WIDTH = 640; // 백엔드 기준 너비
 const IMAGE_HEIGHT = 480; // 백엔드 기준 높이
+
+const showGemini = ref(false);
+
+// Gemini Explain 토글 함수
+const toggleGemini = () => {
+  if (!showGemini.value) {
+    // Gemini 모드 활성화
+    showGemini.value = true;
+    selectedCategory.value = "All"; // 카테고리 초기화
+  } else {
+    // Gemini 모드 비활성화
+    showGemini.value = false;
+  }
+};
+
+// 카테고리 선택 핸들러
+const selectCategory = (category) => {
+  // Gemini 모드가 활성화된 경우 비활성화
+  if (showGemini.value) {
+    showGemini.value = false;
+  }
+  selectedCategory.value = category;
+};
 
 // 색상 목록
 const colorList = [
@@ -109,10 +158,10 @@ const filteredItems = computed(() => {
   return items.filter((item) => item.type === selectedCategory.value);
 });
 
-// 카테고리 선택 핸들러
-const selectCategory = (category) => {
-  selectedCategory.value = category;
-};
+// // 카테고리 선택 핸들러
+// const selectCategory = (category) => {
+//   selectedCategory.value = category;
+// };
 
 // 박스 색상 반환
 const getBoxColor = (type) => {
@@ -204,21 +253,81 @@ if (items.length > 0 && items[0]?.original) {
 <style scoped>
 /* 카테고리 버튼 */
 .categories {
-  margin: 20px;
+  margin: 20px 0;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gemini-category {
+  margin-bottom: 10px;
+}
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 .categories button {
   padding: 10px 20px;
-  margin: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: white;
   color: black;
   cursor: pointer;
 }
+
 .categories button.active {
   background-color: black;
   color: white;
+}
+
+.gemini-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.guideline-item {
+  border: 1px solid white;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  width: 80%;
+  text-align: center;
+}
+
+.guideline-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.guideline-text {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+.captured-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.captured-item {
+  margin: 10px;
+  text-align: center;
+}
+
+.captured-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 /* 이미지 박스 */

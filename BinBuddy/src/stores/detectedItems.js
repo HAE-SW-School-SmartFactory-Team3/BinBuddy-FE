@@ -2,14 +2,15 @@ import { defineStore } from "pinia";
 
 export const useDetectedItemsStore = defineStore("detectedItems", {
   state: () => ({
-    items: [], // 감지된 항목 저장
+    items: [],
+    guidelines: {}, // guidelines 추가
   }),
   actions: {
     setItems(newItems) {
       this.items = newItems;
     },
-    clearItems() {
-      this.items = [];
+    setGuidelines(newGuidelines) {
+      this.guidelines = newGuidelines;
     },
   },
 });

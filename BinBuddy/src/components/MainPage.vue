@@ -104,7 +104,9 @@ const imageSearch = async () => {
     }
 
     const result = await response.json(); // 서버 응답 받기
-    console.log(formData);
+    console.log(result);
+
+    // items 데이터 매핑
     const items = result.analysis.items.map((item) => ({
       original: URL.createObjectURL(selectedFile.value),
       bbox: item.bbox,
@@ -114,8 +116,15 @@ const imageSearch = async () => {
       type: item.type,
     }));
 
+    // guidelines 데이터 추가
+    const guidelines = result.analysis.guidelines;
+
+    // 스토어에 저장
     detectedItemsStore.setItems(items);
+    detectedItemsStore.setGuidelines(guidelines);
+
     console.log("Detected Items:", items);
+    console.log("Guidelines:", guidelines);
   } catch (error) {
     console.error("Error:", error);
     alert("Failed to analyze the image. Please try again.");
